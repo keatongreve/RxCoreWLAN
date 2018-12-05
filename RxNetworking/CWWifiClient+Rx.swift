@@ -33,10 +33,12 @@ class RxCWEventDelegateProxy : DelegateProxy<CWWiFiClient, CWEventDelegate>, Del
 
     func ssidDidChangeForWiFiInterface(withName interfaceName: String) {
         ssidSubject.on(.next(self.client?.interface()?.ssid()))
+        _forwardToDelegate?.ssidDidChangeForWiFiInterface(withName: interfaceName)
     }
 
     func linkQualityDidChangeForWiFiInterface(withName interfaceName: String, rssi: Int, transmitRate: Double) {
         qualitySubject.on(.next((rssi, transmitRate)))
+        _forwardToDelegate?.linkQualityDidChangeForWiFiInterface(withName: interfaceName, rssi: rssi, transmitRate: transmitRate)
     }
 
 

@@ -7,21 +7,36 @@
 //
 
 import Cocoa
+import CoreWLAN
+import RxCocoa
+import RxSwift
 
 class ViewController: NSViewController {
+
+    @IBOutlet private var textViewContents: NSTextView!
+
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        let cwRx = CWWiFiClient.shared().rx
+        Observable
+            .combineLatest(cwRx.ssid, cwRx.linkQuality) { ssid, tup -> (String?, Int, Double) in
+                let (rssi, transmitRate) = tup
+                return (ssid, rssi, transmitRate)
+            }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] ssid, rssi, transmitRate in
+                let data: [String: Any] = [
+                    "SSID": ssid ?? "disconnected",
+                    "RSSI": rssi,
+                    "TransmitRate": transmitRate,
+                ]
+                self?.textViewContents.string = String(describing: data)
+            })
+            .disposed(by: disposeBag)
     }
-
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
-    }
-
 
 }
 

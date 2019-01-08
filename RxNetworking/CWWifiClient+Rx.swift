@@ -46,6 +46,7 @@ class RxCWEventDelegateProxy : DelegateProxy<CWWiFiClient, CWEventDelegate>, Del
 
     /// For more information take a look at `DelegateProxyType`.
     open class func currentDelegate(for object: ParentObject) -> CWEventDelegate? {
+        // 'as?' is required because CWWifiClient.delegate's type is AnyObject, not CWEventDelegate
         return object.delegate as? CWEventDelegate
     }
 
